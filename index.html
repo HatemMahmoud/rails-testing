@@ -72,8 +72,8 @@
           <section>
             <h2>Static vs. Dynamic</h2>
             <ul>
-              <li><strong>Static Testing</strong><br /> reviews, walkthroughs, inspections, etc.</li>
-              <li><strong>Dynamic Testing</strong><br /> executing programmed code with test cases.</li>
+              <li><strong>Static Testing</strong><br /> Reviews, walkthroughs, inspections, etc.</li>
+              <li><strong>Dynamic Testing</strong><br /> Executing programmed code with test cases.</li>
             </ul>
           </section>
           <section>
@@ -128,6 +128,14 @@
             <h2>1. No Testing!</h2>
           </section>
           <section>
+            <h2>Development without Testing</h2>
+            <ul>
+              <li>Makes collaboration harder</li>
+              <li>Instills fear and resistance to change</li>
+              <li>Fails to empower developers to take responsibility</li>
+            </ul>
+          </section>
+          <section>
             <h2>2. Waterfall Testing</h2>
             <p>Testing is performed by independent group of testers in a separate phase after the implementation.</p>
           </section>
@@ -145,6 +153,10 @@
             </ol>
           </section>
           <section>
+            <h2>TDD - Cost of Change</h2>
+            <img src="images/cost-of-change.png" />
+          </section>
+          <section>
             <h2>5. Behavior-Driven Development (BDD)</h2>
             <p>Combines the techniques and principles of TDD with ideas from object-oriented analysis and design to provide software developers and business analysts with a shared process to collaborate on software development.</p>
           </section>
@@ -152,23 +164,50 @@
             <h2>5. Behavior-Driven Development (BDD)</h2>
             <ul>
               <li>Unit test names should be whole sentences starting with "should" and should be written in order of business value.</li>
-              <li>Acceptance tests should be written in user stories:<br />
-                <pre><code>As a [role] I want [feature] so that [benefit]</code></pre></li>
-              <li>Acceptance criteria should be written in scenarios:<br />
-                <pre><code>Given [context], when [event occurs], then [ensure some outcomes]</code></pre></li>
+              <li>
+                Acceptance tests should be written in user stories:<br />
+                <pre><code>As a [role] I want [feature] so that [benefit]</code></pre>
+              </li>
+              <li>
+                Acceptance criteria should be written in scenarios:<br />
+                <pre><code>Given [context], when [event occurs], then [ensure some outcomes]</code></pre>
+              </li>
             </ul>
           </section>
           <section>
             <h2>Rails Testing</h2>
             <ul>
-              <li>Testing support was built into Rails from the beginning.</li>
-              <li>Rails creates a "test" folder as soon as you generate an app</li>
-              <li>Rails produces skeleton test code when you generate your models and controllers.</li>
-              <li>The "testing" environment is used when running tests.</li>
-              <li>Fixtures are a way of organizing sample data to populate the testing database before tests run.</li>
+              <li>Ruby ships with <code>Test::Unit</code> framework</li>
+              <li>Testing support was built into Rails from the beginning</li>
+              <li>The <code>test</code> folder is created once an app is generated</li>
+              <li>Skeleton test code is generated for models and controllers</li>
+              <li>The <code>testing</code> environment is used when running tests</li>
+              <li>Fixtures are used to organize sample data</li>
             </ul>
           </section>
+          <section>
+            <h2>Testing Layers in Rails</h2>
+            <img src="images/rails-testing-layers.png" />
+          </section>
+          <section>
+            <h2>Testing Impact</h2>
+            <img src="images/testing-layers-impact.png" />
+          </section>
+          <section>
+            <h2>Testing Cost</h2>
+            <img src="images/testing-layers-cost.png" />
+          </section>
 				</section>
+
+        <section>
+          <section>
+            <h1>Unit Testing</h1>
+          </section>
+          <section>
+            <h2>Test::Unit</h2>
+            <p></p>
+          </section>
+        </section>
 				
 				<section>
           <h1>Thank You!</h1>
