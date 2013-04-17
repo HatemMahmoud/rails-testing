@@ -491,6 +491,67 @@ end
             <h2>Helpers for Integration Tests</h2>
             <img src="images/rails-integration-test-helpers.png" />
           </section>
+          <section>
+            <h2>Capybara</h2>
+            <pre><code>
+# Gemfile
+group :test do
+  gem 'capybara'
+end
+            </code></pre>
+            <pre><code>
+# tasks/test/test_helper.rb
+require 'capybara/rails'
+class ActionDispatch::IntegrationTest
+  # Make the Capybara DSL available in all integration tests
+  include Capybara::DSL
+end
+            </code></pre>
+          </section>
+          <section>
+            <h2>Capybara</h2>
+            <pre><code>
+# tasks/test/integration/task_management_test.rb
+require 'test_helper'
+
+class TaskManagementTest < ActionDispatch::IntegrationTest
+  test 'creates a new task' do
+    visit tasks_path
+    click_link 'New Task'
+    fill_in 'task_name', with: 'Learn TDD'
+    click_button 'Create Task'
+    assert page.has_content? 'Task was successfully created.'
+    assert page.has_content? 'Learn TDD'
+  end
+end
+            </code></pre>
+          </section>
+          <section>
+            <h2>Launchy</h2>
+            <pre><code>
+# Gemfile
+group :test do
+  gem 'capybara'
+  gem 'launchy'
+end
+            </code></pre>
+            <pre><code>
+# tasks/test/integration/task_management_test.rb
+require 'test_helper'
+
+class TaskManagementTest < ActionDispatch::IntegrationTest
+  test 'creates a new task' do
+    visit tasks_path
+    click_link 'New Task'
+    fill_in 'task_name', with: 'Learn TDD'
+    click_button 'Create Task'
+    save_and_open_page
+    assert page.has_content? 'Task was successfully created.'
+    assert page.has_content? 'Learn TDD'
+  end
+end
+            </code></pre>
+          </section>
         </section>
         
         <section>
