@@ -40,7 +40,7 @@
             <li>Unit Testing</li>
             <li>Functional Testing</li>
             <li>Integration Testing</li>
-            <li>Summary</li>
+            <li>RSpec and Friends</li>
             <li>Resources</li>
           </ul>
         </section>
@@ -159,7 +159,7 @@
           </section>
           <section>
             <h2>5. Behavior-Driven Development (BDD)</h2>
-            <p>Combines the techniques and principles of TDD with ideas from object-oriented analysis and design to provide software developers and business analysts with a shared process to collaborate on software development.</p>
+            <p>Combines Test-Driven Development, Domain Driven Design, and Acceptance Test-Driven Planning.</p>
           </section>
           <section>
             <h2>5. Behavior-Driven Development (BDD)</h2>
@@ -393,7 +393,7 @@ end</code></pre>
             <h1>Functional Testing</h1>
           </section>
           <section>
-            <h2>Controller Testing</h2>
+            <h2>Controller Test</h2>
             <pre><code>
 # tasks/test/functional/tasks_controller_test.rb
 require 'test_helper'
@@ -452,9 +452,48 @@ end
             <ul>
               <li>Views shouldn’t have logic</li>
               <li>Controllers shouldn’t have logic</li>
-              <li>Integration testing have you covered</li>
+              <li>Integration tests have you covered</li>
             </ul>
           </section>
+        </section>
+        
+        <section>
+          <section>
+            <h1>Integration Testing</h1>
+          </section>
+          <section>
+            <h2>Integration Test</h2>
+            <pre><code>
+$ rails generate integration_test task_management
+      invoke  test_unit
+      create    test/integration/task_management_test.rb
+            </code></pre>
+            <pre><code>
+# tasks/test/integration/task_management_test.rb
+require 'test_helper'
+
+class TaskManagementTest < ActionDispatch::IntegrationTest
+  test 'list all tasks' do
+    task = tasks(:milk)
+    get tasks_path
+    assert_response :success
+    assert_select 'li.task', task.name
+  end
+end
+            </code></pre>
+          </section>
+          <section>
+            <h2>Helpers for Integration Tests</h2>
+            <img src="images/rails-integration-test-helpers.png" />
+          </section>
+        </section>
+        
+        <section>
+          <h1>RSpec and Friends</h1>
+        </section>
+        
+        <section>
+          <h1>Resources</h1>
         </section>
 				
 				<section>
