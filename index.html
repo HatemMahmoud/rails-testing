@@ -40,7 +40,8 @@
             <li>Unit Testing</li>
             <li>Functional Testing</li>
             <li>Integration Testing</li>
-            <li>RSpec and Friends</li>
+            <li>Factories</li>
+            <li>RSpec</li>
             <li>Resources</li>
           </ul>
         </section>
@@ -270,6 +271,10 @@ Finished tests in 0.031115s, 0.0000 tests/s, 0.0000 assertions/s.
             </code></pre>
           </section>
           <section>
+            <h2>Rake Tasks</h2>
+            <img src="images/rails-testing-rake-tasks.png" />
+          </section>
+          <section>
             <h2>Testing Layers</h2>
             <img src="images/rails-testing-layers.png" />
           </section>
@@ -489,7 +494,52 @@ end
         </section>
         
         <section>
-          <h1>RSpec and Friends</h1>
+          <section>
+            <h1>Factories</h1>
+          </section>
+          <section>
+            <h2>factory_girl</h2>
+            <pre><code>
+# Gemfile
+group :development, :test do
+  gem 'factory_girl_rails'
+end
+            </code></pre>
+            <pre><code>
+$ rails generate model project name
+      invoke  active_record
+      create    db/migrate/20130417150111_create_projects.rb
+      create    app/models/project.rb
+      invoke    test_unit
+      create      test/unit/project_test.rb
+      invoke      factory_girl
+      create        test/factories/projects.rb
+            </code></pre>
+          </section>
+          <section>
+            <h2>factory_girl</h2>
+            <pre><code>
+# tasks/test/factories.rb
+FactoryGirl.define do
+  factory :project do
+    sequence(:name) { |n| "Project#{n}" }
+    due_at Date.tomorrow
+  end
+  
+  factory :task do
+    project
+    sequence(:name) { |n| "Task#{n}" }
+    done false
+  end
+end
+            </code></pre>
+          </section>
+        </section>
+        
+        <section>
+          <section>
+            <h1>RSpec</h1>
+          </section>
         </section>
         
         <section>
