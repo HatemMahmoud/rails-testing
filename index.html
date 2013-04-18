@@ -622,6 +622,423 @@ end</code></pre>
           <section>
             <h1>RSpec</h1>
           </section>
+          <section>
+            <h2>RSpec Setup</h2>
+            <pre><code>
+$ rails new mooc  --skip-test-unit
+            </code></pre>
+            <pre><code>
+# Gemfile
+group :development, :test do
+  gem 'rspec-rails'
+end
+            </code></pre>
+            <pre><code>
+$ rails generate rspec:install
+
+      create  .rspec
+      create  spec
+      create  spec/spec_helper.rb
+            </code></pre>
+          </section>
+          <section>
+            <h2>RSpec Generators</h2>
+            <pre><code>
+$ rails generate scaffold user name
+      invoke  active_record
+      create    db/migrate/20130418110210_create_users.rb
+      create    app/models/user.rb
+      invoke    rspec
+      create      spec/models/user_spec.rb
+      ...
+      invoke    rspec
+      create      spec/controllers/users_controller_spec.rb
+      create      spec/views/users/edit.html.erb_spec.rb
+      create      spec/views/users/index.html.erb_spec.rb
+      create      spec/views/users/new.html.erb_spec.rb
+      create      spec/views/users/show.html.erb_spec.rb
+      create      spec/routing/users_routing_spec.rb
+      invoke      rspec
+      create        spec/requests/users_spec.rb
+      invoke    helper
+      create      app/helpers/users_helper.rb
+      invoke      rspec
+      create        spec/helpers/users_helper_spec.rb
+      ...
+            </code></pre>
+          </section>
+          <section>
+            <h2>spec Folder</h2>
+            <img src="images/rails-spec-folder.png" />
+          </section>
+          <section>
+            <h2>Running Specs</h2>
+            <pre><code>
+$ rake spec
+/Users/Hatem/.rbenv/versions/2.0.0-p0/bin/ruby -S rspec ./spec/controllers/users_controller_spec.rb ./spec/helpers/users_helper_spec.rb ./spec/models/user_spec.rb ./spec/requests/users_spec.rb ./spec/routing/users_routing_spec.rb ./spec/views/users/edit.html.erb_spec.rb ./spec/views/users/index.html.erb_spec.rb ./spec/views/users/new.html.erb_spec.rb ./spec/views/users/show.html.erb_spec.rb
+..*..................*........
+
+Pending:
+  User add some examples to (or delete) /Users/Hatem/Presentations/Ruby on Rails/rails-testing/mooc/spec/models/user_spec.rb
+    # No reason given
+    # ./spec/models/user_spec.rb:4
+  UsersHelper add some examples to (or delete) /Users/Hatem/Presentations/Ruby on Rails/rails-testing/mooc/spec/helpers/users_helper_spec.rb
+    # No reason given
+    # ./spec/helpers/users_helper_spec.rb:14
+
+Finished in 0.33651 seconds
+30 examples, 0 failures, 2 pending
+            </code></pre>
+          </section>
+          <section>
+            <h2>Model Specs</h2>
+            <pre><code>
+# mooc/spec/models/lecture_spec.rb
+require 'spec_helper'
+
+describe Lecture do
+  let(:lecture) { FactoryGirl.create :lecture }
+  
+  it 'has a valid factory' do
+    lecture.should be_valid
+  end
+  
+  it 'validates presence of title and summary' do
+    FactoryGirl.build(:lecture, title: nil).should have(1).error_on(:title)
+    FactoryGirl.build(:lecture, summary: nil).should have(1).error_on(:summary)
+  end
+  
+  it 'validates length of title' do
+    FactoryGirl.build(:lecture, title: 'a'*100).should be_valid
+    FactoryGirl.build(:lecture, title: 'a'*101).should have(1).error_on(:title)
+  end
+  
+  it 'validates uniqueness of title in section' do
+    course = FactoryGirl.create :course
+    section1 = FactoryGirl.create :section, course: course
+    section2 = FactoryGirl.create :section, course: course
+    lecture = FactoryGirl.create :lecture, section: section1, title: 'Lecture One'
+    FactoryGirl.build(:lecture, section: section1, title: lecture.title.downcase).should have(1).error_on(:title)
+    FactoryGirl.build(:lecture, section: section2, title: lecture.title.downcase).should be_valid
+  end
+  
+  it 'validates format of video url' do
+    FactoryGirl.build(:lecture, video: nil).should be_valid
+    FactoryGirl.build(:lecture, video: 'http://www.youtube.com/watch?v=123-abc_XYZ').should be_valid
+    FactoryGirl.build(:lecture, video: 'http://www.youtube.com/123-abc_XYZ').should have(1).error_on(:video)
+    FactoryGirl.build(:lecture, video: 'http://www.example.com/watch?v=123-abc_XYZ').should have(1).error_on(:video)
+  end
+end
+            </code></pre>
+          </section>
+          <section>
+            <h2>Controller Specs</h2>
+            <pre><code>
+# mooc/spec/controllers/users_controller_spec.rb
+require 'spec_helper'
+
+describe UsersController do
+
+  # This should return the minimal set of attributes required to create a valid
+  # User. As you add validations to User, be sure to
+  # update the return value of this method accordingly.
+  def valid_attributes
+    { "name" => "MyString" }
+  end
+
+  # This should return the minimal set of values that should be in the session
+  # in order to pass any filters (e.g. authentication) defined in
+  # UsersController. Be sure to keep this updated too.
+  def valid_session
+    {}
+  end
+
+  describe "GET index" do
+    it "assigns all users as @users" do
+      user = User.create! valid_attributes
+      get :index, {}, valid_session
+      assigns(:users).should eq([user])
+    end
+  end
+
+  describe "GET show" do
+    it "assigns the requested user as @user" do
+      user = User.create! valid_attributes
+      get :show, {:id => user.to_param}, valid_session
+      assigns(:user).should eq(user)
+    end
+  end
+
+  describe "GET new" do
+    it "assigns a new user as @user" do
+      get :new, {}, valid_session
+      assigns(:user).should be_a_new(User)
+    end
+  end
+
+  describe "GET edit" do
+    it "assigns the requested user as @user" do
+      user = User.create! valid_attributes
+      get :edit, {:id => user.to_param}, valid_session
+      assigns(:user).should eq(user)
+    end
+  end
+
+  describe "POST create" do
+    describe "with valid params" do
+      it "creates a new User" do
+        expect {
+          post :create, {:user => valid_attributes}, valid_session
+        }.to change(User, :count).by(1)
+      end
+
+      it "assigns a newly created user as @user" do
+        post :create, {:user => valid_attributes}, valid_session
+        assigns(:user).should be_a(User)
+        assigns(:user).should be_persisted
+      end
+
+      it "redirects to the created user" do
+        post :create, {:user => valid_attributes}, valid_session
+        response.should redirect_to(User.last)
+      end
+    end
+
+    describe "with invalid params" do
+      it "assigns a newly created but unsaved user as @user" do
+        # Trigger the behavior that occurs when invalid params are submitted
+        User.any_instance.stub(:save).and_return(false)
+        post :create, {:user => { "name" => "invalid value" }}, valid_session
+        assigns(:user).should be_a_new(User)
+      end
+
+      it "re-renders the 'new' template" do
+        # Trigger the behavior that occurs when invalid params are submitted
+        User.any_instance.stub(:save).and_return(false)
+        post :create, {:user => { "name" => "invalid value" }}, valid_session
+        response.should render_template("new")
+      end
+    end
+  end
+
+  describe "PUT update" do
+    describe "with valid params" do
+      it "updates the requested user" do
+        user = User.create! valid_attributes
+        # Assuming there are no other users in the database, this
+        # specifies that the User created on the previous line
+        # receives the :update_attributes message with whatever params are
+        # submitted in the request.
+        User.any_instance.should_receive(:update_attributes).with({ "name" => "MyString" })
+        put :update, {:id => user.to_param, :user => { "name" => "MyString" }}, valid_session
+      end
+
+      it "assigns the requested user as @user" do
+        user = User.create! valid_attributes
+        put :update, {:id => user.to_param, :user => valid_attributes}, valid_session
+        assigns(:user).should eq(user)
+      end
+
+      it "redirects to the user" do
+        user = User.create! valid_attributes
+        put :update, {:id => user.to_param, :user => valid_attributes}, valid_session
+        response.should redirect_to(user)
+      end
+    end
+
+    describe "with invalid params" do
+      it "assigns the user as @user" do
+        user = User.create! valid_attributes
+        # Trigger the behavior that occurs when invalid params are submitted
+        User.any_instance.stub(:save).and_return(false)
+        put :update, {:id => user.to_param, :user => { "name" => "invalid value" }}, valid_session
+        assigns(:user).should eq(user)
+      end
+
+      it "re-renders the 'edit' template" do
+        user = User.create! valid_attributes
+        # Trigger the behavior that occurs when invalid params are submitted
+        User.any_instance.stub(:save).and_return(false)
+        put :update, {:id => user.to_param, :user => { "name" => "invalid value" }}, valid_session
+        response.should render_template("edit")
+      end
+    end
+  end
+
+  describe "DELETE destroy" do
+    it "destroys the requested user" do
+      user = User.create! valid_attributes
+      expect {
+        delete :destroy, {:id => user.to_param}, valid_session
+      }.to change(User, :count).by(-1)
+    end
+
+    it "redirects to the users list" do
+      user = User.create! valid_attributes
+      delete :destroy, {:id => user.to_param}, valid_session
+      response.should redirect_to(users_url)
+    end
+  end
+
+end
+            </code></pre>
+          </section>
+          <section>
+            <h2>Request Specs</h2>
+            <pre><code>
+# mooc/spec/requests/users_spec.rb
+require 'spec_helper'
+
+describe "home page" do
+  it "displays the user's username after successful login" do
+    user = User.create!(:username => "jdoe", :password => "secret")
+    get "/login"
+    assert_select "form.login" do
+      assert_select "input[name=?]", "username"
+      assert_select "input[name=?]", "password"
+      assert_select "input[type=?]", "submit"
+    end
+
+    post "/login", :username => "jdoe", :password => "secret"
+    assert_select ".header .username", :text => "jdoe"
+  end
+end
+            </code></pre>
+          </section>
+          <section>
+            <h2>Request Specs</h2>
+            <pre><code>
+# mooc/spec/requests/users_spec.rb
+require 'spec_helper'
+
+describe "home page" do
+  it "displays the user's username after successful login" do
+    user = FactoryGirl.create(:user, :username => "jdoe", :password => "secret")
+    visit "/login"
+    fill_in "Username", :with => "jdoe"
+    fill_in "Password", :with => "secret"
+    click_button "Log in"
+
+    expect(page).to have_selector(".header .username", :text => "jdoe")
+  end
+end
+            </code></pre>
+          </section>
+          <section>
+            <h2>Feature Specs</h2>
+            <pre><code>
+# mooc/spec/features/sections_spec.rb
+require 'spec_helper'
+
+feature 'Sections' do
+
+  context 'instructor' do
+    given(:instructor) { FactoryGirl.create :user, role: 'instructor' }
+    given(:course) { FactoryGirl.create :course, instructor: instructor }
+    
+    background do
+      login instructor
+    end
+    
+    scenario 'creates a new section' do
+      visit course_sections_path(course)
+      click_link I18n.t('courses.navigation.new_section')
+      fill_in I18n.t('activerecord.attributes.section.name'), with: 'First Section'
+      click_button I18n.t('helpers.submit.create', model: I18n.t('activerecord.models.section'))
+      page.should have_content I18n.t('sections.create.created')
+      page.should have_content 'First Section'
+    end
+    
+    scenario 'updates a section' do
+      section = FactoryGirl.create :section, course: course, name: 'First Section'
+      visit course_sections_path(course)
+      click_link "edit_section_#{section.id}"
+      fill_in I18n.t('activerecord.attributes.section.name'), with: 'First Section Updated'
+      click_button I18n.t('helpers.submit.update', model: I18n.t('activerecord.models.section'))
+      page.should have_content I18n.t('sections.update.updated')
+      page.should have_content 'First Section Updated'
+    end
+  
+    scenario 'deletes an empty section' do
+      section = FactoryGirl.create :section, course: course, name: 'First Section'
+      section_name = section.name
+      visit edit_course_section_path(course, section)
+      expect { click_button "delete_section_#{section.id}" }.to change(Section, :count).by(-1)
+      page.should have_content I18n.t('sections.destroy.deleted')
+      page.should_not have_content section_name
+    end
+  
+    scenario 'cannot delete a section if not empty' do
+      section = FactoryGirl.create :section, course: course, name: 'First Section'
+      section_name = section.name
+      lecture = FactoryGirl.create :lecture, section: section
+      visit edit_course_section_path(course, section)
+      expect { click_button "delete_section_#{section.id}" }.to change(Section, :count).by(0)
+      page.should have_content I18n.t('sections.you_cannot_delete_section_with_lectures')
+      page.should have_content section_name
+    end
+  end
+
+end
+            </code></pre>
+          </section>
+          <section>
+            <h2>View Specs</h2>
+            <pre><code>
+# mooc/spec/views/users/index.html.erb_spec.rb
+require 'spec_helper'
+
+describe "users/index" do
+  before(:each) do
+    assign(:users, [ stub_model(User), stub_model(User) ])
+  end
+
+  it "renders a list of users" do
+    render
+    assert_select "tr>td", :text => "Name".to_s, :count => 2
+  end
+end
+            </code></pre>
+          </section>
+          <section>
+            <h2>Routing Specs</h2>
+            <pre><code>
+# mooc/spec/routing/users_routing_spec.rb
+require 'spec_helper'
+
+describe "routing to profiles" do
+  it "routes /profile/:username to profile#show for username" do
+    expect(:get => "/profiles/jsmith").to route_to(
+      :controller => "profiles",
+      :action => "show",
+      :username => "jsmith"
+    )
+  end
+
+  it "does not expose a list of profiles" do
+    expect(:get => "/profiles").not_to be_routable
+  end
+end
+            </code></pre>
+          </section>
+          <section>
+            <h2>Helper Specs</h2>
+            <pre><code>
+# mooc/spec/helpers/users_helper_spec.rb
+require 'spec_helper'
+
+describe EventsHelper do
+  describe "#link_to_event" do
+    it "displays the title, and formatted date" do
+      event = Event.new("Ruby Kaigi", Date.new(2010, 8, 27))
+      # helper is an instance of ActionView::Base configured with the
+      # EventsHelper and all of Rails' built-in helpers
+      expect(helper.link_to_event).to match /Ruby Kaigi, 27 Aug, 2010/
+    end
+  end
+end
+            </code></pre>
+          </section>
         </section>
         
         <section>
